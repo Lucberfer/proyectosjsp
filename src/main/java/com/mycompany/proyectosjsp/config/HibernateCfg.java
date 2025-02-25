@@ -1,13 +1,43 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.proyectosjsp.config;
+
+import com.mysql.cj.xdevapi.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
 
 /**
  *
- * @author HP
+ * @author Lucas
+ * 
+ * Hibernate configuration class.
+ * This class initializes Hibernate and provides a SessionsFactory instance.
  */
 public class HibernateCfg {
-    
+    // Singleton instance of SessionFactory
+    private static final SessionFactory sessionFactory = buildSessionFactory();
+
+    /**
+     * Builds and configures the SessionFactory.
+     * This method loads Hibernate settings from hibernate.cfg.xml.
+     * 
+     * @return SessionFactory instance
+     */
+    private static SessionFactory buildSessionFactory() {
+        try {
+            // Load Hibernate configuration from hibernate.cfg.xml
+            return (SessionFactory) new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+        } catch (Throwable ex) {
+            // Log the exception if Hibernate fails to initialize
+            System.err.println("Error initializing Hibernate: " + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    /**
+     * Provides access to the SessionFactory instance.
+     * 
+     * @return SessionFactory
+     */
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
 }
