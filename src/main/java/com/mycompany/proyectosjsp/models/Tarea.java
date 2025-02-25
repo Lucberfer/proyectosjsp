@@ -1,13 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.proyectosjsp.models;
 
+import javax.persistence.*;
+import java.util.Date;
+
 /**
+ * Entity class representing a task.
+ * This class is mapped to the "tareas" table in the database.
  *
- * @author HP
+ * @author Lucas
  */
+
+@Entity
+@Table(name = "tareas")
+
 public class Tarea {
     
+    @Id 
+    @GeneratedValue(strategy = )
 }
