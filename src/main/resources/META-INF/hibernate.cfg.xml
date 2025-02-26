@@ -12,11 +12,15 @@
         <!-- Hibernate dialect for MySQL -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
 
-        <!-- Show SQL queries in console (useful for debugging) -->
+        <!-- Show formatted SQL queries in console (useful for debugging) -->
         <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
 
         <!-- Automatically create/update database schema -->
         <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Fix potential timezone issues -->
+        <property name="hibernate.jdbc.time_zone">UTC</property>
 
         <!-- Entity mappings -->
         <mapping class="com.mycompany.proyectosjsp.models.Proyecto"/>

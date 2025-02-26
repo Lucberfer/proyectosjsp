@@ -1,15 +1,13 @@
 package com.mycompany.proyectosjsp.config;
 
-import com.mysql.cj.xdevapi.SessionFactory;
+import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-
 /**
- *
- * @author Lucas
- * 
  * Hibernate configuration class.
- * This class initializes Hibernate and provides a SessionsFactory instance.
+ * This class initializes Hibernate and provides a SessionFactory instance.
+ * 
+ * @author Lucas
  */
 public class HibernateCfg {
     // Singleton instance of SessionFactory
@@ -24,7 +22,7 @@ public class HibernateCfg {
     private static SessionFactory buildSessionFactory() {
         try {
             // Load Hibernate configuration from hibernate.cfg.xml
-            return (SessionFactory) new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+            return new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (Throwable ex) {
             // Log the exception if Hibernate fails to initialize
             System.err.println("Error initializing Hibernate: " + ex);

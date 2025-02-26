@@ -3,10 +3,11 @@ package com.mycompany.proyectosjsp.models;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Entity class representing a project. This class is mapped to the "proyectos"
- * table in the database.
+ * Entity class representing a project.
+ * This class is mapped to the "proyectos" table in the database.
  *
  * @author Lucas
  */
@@ -40,22 +41,21 @@ public class Proyecto {
     @Column(name = "estado", nullable = false, length = 50)
     private String estado;
 
-    // One-to-many relationshiop: a project can have multiple tasks
-    @OneToMany(mappedBy = "proycto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tarea> tareas;
+    // One-to-many relationship: a project can have multiple tasks
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tarea> tareas = new ArrayList<>(); // Initialize list to prevent null errors
 
     // Default constructor
-    public Proyecto() {
-    }
+    public Proyecto() {}
 
-    //Constructor with paramters
+    // Constructor with parameters
     public Proyecto(String nombreProyecto, String descripcion, Date fechaInicio, Date fechaFin, String estado) {
-
         this.nombreProyecto = nombreProyecto;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.estado = estado;
+        this.tareas = new ArrayList<>(); // Initialize list in constructor
     }
 
     // Getters & Setters
@@ -115,4 +115,17 @@ public class Proyecto {
         this.tareas = tareas;
     }
 
+    // Override toString() with null-safe checks
+    @Override
+    public String toString() {
+        return "Proyecto{" +
+                "id=" + id +
+                ", nombreProyecto='" + nombreProyecto + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", fechaInicio=" + (fechaInicio != null ? fechaInicio.toString() : "null") +
+                ", fechaFin=" + (fechaFin != null ? fechaFin.toString() : "null") +
+                ", estado='" + estado + '\'' +
+                ", tareas=" + (tareas != null ? tareas.size() : "No tasks") +
+                '}';
+    }
 }

@@ -1,13 +1,100 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.proyectosjsp.services;
 
+import com.mycompany.proyectosjsp.config.HibernateCfg;
+import com.mycompany.proyectosjsp.dao.interfaces.CrudDAO;
+import com.mycompany.proyectosjsp.models.Proyecto;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import java.util.List;
+
 /**
- *
- * @author HP
+ * DAO class for managing Proyecto entities.
+ * Implements the generic CRUD operations from CrudDAO.
+ * 
+ * @author Lucas
  */
-public class ProyectoService {
-    
+public class ProyectoService implements CrudDAO<Proyecto> {
+
+    /**
+     * Retrieves a project by its ID.
+     * 
+     * @param id The project's ID
+     * @return The found Proyecto entity or null if not found
+     */
+    @Override
+    public Proyecto obtenerPorId(Long id) {
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            return session.get(Proyecto.class, id);
+        }
+    }
+
+    /**
+     * Retrieves all projects.
+     * 
+     * @return A list of Proyecto entities
+     */
+    @Override
+    @SuppressWarnings("unchecked")  // Avoids Hibernate warning
+    public List<Proyecto> obtenerTodos() {
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Proyecto", Proyecto.class).list();
+        }
+    }
+
+    /**
+     * Saves a new project to the database.
+     * 
+     * @param proyecto The project entity to be saved
+     */
+    @Override
+    public void guardar(Proyecto proyecto) {
+        Transaction tx = null;
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.save(proyecto);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();  // Rollback if error occurs
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Updates an existing project in the database.
+     * 
+     * @param proyecto The project entity to be updated
+     */
+    @Override
+    public void actualizar(Proyecto proyecto) {
+        Transaction tx = null;
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.update(proyecto);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();  // Rollback on error
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Deletes a project by its ID.
+     * 
+     * @param id The ID of the project to be deleted
+     */
+    @Override
+    public void eliminar(Long id) {
+        Transaction tx = null;
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            Proyecto proyecto = session.get(Proyecto.class, id);
+            if (proyecto != null) {
+                session.delete(proyecto);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();  // Rollback on error
+            e.printStackTrace();
+        }
+    }
 }
