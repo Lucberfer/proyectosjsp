@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet for handling application errors.
- * It captures exceptions and forwards the user to an error page.
+ * Servlet to handle errors and display user-friendly messages.
+ * Redirects users to a common error page when an exception occurs.
  * 
  * @author Lucas
  */
@@ -17,23 +17,20 @@ import java.io.IOException;
 public class ErrorServlet extends HttpServlet {
 
     /**
-     * Handles GET requests and displays the error page.
+     * Handles GET requests and displays error messages.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        // Retrieve error details
-        Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
-        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-        String requestUri = (String) request.getAttribute("javax.servlet.error.request_uri");
-
-        // Set attributes for error.jsp
-        request.setAttribute("statusCode", statusCode);
-        request.setAttribute("requestUri", requestUri);
-        request.setAttribute("exception", throwable);
-
-        // Forward to the custom error page
         request.getRequestDispatcher("views/error.jsp").forward(request, response);
+    }
+
+    /**
+     * Handles POST requests (redirects to error page).
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }

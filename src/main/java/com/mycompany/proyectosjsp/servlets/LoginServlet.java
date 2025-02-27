@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Servlet for handling user login requests.
- * It interacts with UsuarioService to authenticate users.
+ * Servlet to handle user login requests.
+ * Authenticates users and manages session creation.
  * 
  * @author Lucas
  */
@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     /**
-     * Displays the login page.
+     * Handles GET requests to display the login page.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,40 +37,22 @@ public class LoginServlet extends HttpServlet {
     }
 
     /**
-     * Handles the login process.
+     * Handles POST requests to process login.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Validate input fields
-        if (username == null || username.trim().isEmpty() ||
-            password == null || password.trim().isEmpty()) {
-            
-            request.setAttribute("error", "Todos los campos son obligatorios.");
-            request.getRequestDispatcher("views/login.jsp").forward(request, response);
-            return;
-        }
-
-        // Authenticate user
         Usuario usuario = usuarioService.validarUsuario(username, password);
 
         if (usuario != null) {
-            // Create session and store user details
             HttpSession session = request.getSession();
             session.setAttribute("usuario", usuario.getUsername());
             session.setAttribute("rol", usuario.getRol());
 
-            // Redirect based on role
-            if ("admin".equals(usuario.getRol())) {
-                response.sendRedirect("views/inicio.jsp?exito=Bienvenido administrador.");
-            } else {
-                response.sendRedirect("views/inicio.jsp?exito=Inicio de sesión exitoso.");
-            }
+            response.sendRedirect("inicio");
         } else {
             request.setAttribute("error", "Usuario o contraseña incorrectos.");
             request.getRequestDispatcher("views/login.jsp").forward(request, response);

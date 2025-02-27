@@ -7,9 +7,9 @@ import org.hibernate.Transaction;
 import java.util.List;
 
 /**
- * DAO class for managing Tarea entities.
- * Implements CRUD operations using Hibernate.
- * 
+ * DAO class for managing Tarea entities. Implements CRUD operations using
+ * Hibernate.
+ *
  * @author Lucas
  */
 public class TareaDAO {
@@ -34,6 +34,20 @@ public class TareaDAO {
     public List<Tarea> obtenerTodas() {
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
             return session.createQuery("FROM Tarea", Tarea.class).list();
+        }
+    }
+
+    /**
+     * Retrieves all tasks for a specific project.
+     *
+     * @param idProyecto The project ID
+     * @return A list of tasks linked to the project
+     */
+    public List<Tarea> obtenerTareasPorProyecto(Long idProyecto) {
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Tarea WHERE proyecto.id = :idProyecto", Tarea.class)
+                    .setParameter("idProyecto", idProyecto)
+                    .list();
         }
     }
 

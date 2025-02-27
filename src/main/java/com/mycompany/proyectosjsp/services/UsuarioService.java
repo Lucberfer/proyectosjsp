@@ -27,9 +27,9 @@ public class UsuarioService {
     private void crearAdminSiNoExiste() {
         Usuario admin = usuarioDAO.obtenerPorUsername("admin");
         if (admin == null) {
-            Usuario usuarioAdmin = new Usuario("admin", "Administrador", "admin", "admin");
+            Usuario usuarioAdmin = new Usuario("admin", "admin", "admin");
             usuarioDAO.guardar(usuarioAdmin);
-            System.out.println("✅ Usuario administrador creado: admin / admin");
+            System.out.println("Usuario administrador creado: admin / admin");
         }
     }
 
@@ -45,13 +45,10 @@ public class UsuarioService {
             return false; // Username already in use
         }
 
-        // Ensure only one admin exists
-        if ("admin".equals(usuario.getRol())) {
-            return false; // No one can register as an admin manually
-        }
+        // Ensure no one can register as an admin manually
+        usuario.setRol("usuario");
 
         // Save user with default role "usuario"
-        usuario.setRol("usuario");
         usuarioDAO.guardar(usuario);
         return true;
     }
@@ -104,12 +101,16 @@ public class UsuarioService {
      * Ensures that the admin user cannot be deleted.
      *
      * @param id The ID of the user to be deleted
-     * @return true if deleted, false if user is admin
+     * @return true if deleted, false if user is admin or not found
      */
     public boolean eliminarUsuario(Long id) {
         Usuario usuario = usuarioDAO.obtenerPorId(id);
 
-        if (usuario != null && "admin".equals(usuario.getRol())) {
+        if (usuario == null) {
+            return false; // Usuario no encontrado
+        }
+
+        if ("admin".equals(usuario.getRol())) {
             return false; // Prevent deletion of the admin account
         }
 
