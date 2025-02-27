@@ -1,87 +1,57 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.proyectosjsp.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.mycompany.proyectosjsp.models.Tarea;
+import com.mycompany.proyectosjsp.models.Proyecto;
+import com.mycompany.proyectosjsp.services.TareaService;
+import com.mycompany.proyectosjsp.services.ProyectoService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 /**
- *
- * @author HP
+ * Servlet for handling task-related HTTP requests.
+ * Interacts with TareaService to manage task operations.
+ * 
+ * @author Lucas
  */
-@WebServlet(name = "TareaServlet", urlPatterns = {"/TareaServlet"})
-public class TareaServlet extends HttpServlet {
+@WebServlet(name = "TareaServlet", urlPatterns = {"/tareas"})
+public class TareaServlet extends BaseServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet TareaServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet TareaServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+    private TareaService tareaService;
+    private ProyectoService proyectoService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        tareaService = new TareaService();
+        proyectoService = new ProyectoService();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles GET requests: Lists all tasks for a specific project.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        Long idProyecto = getLongParameter(request, "id_proyecto");
+
+        if (idProyecto == null) {
+            redirectWithMessage(request, response, "proyectos", null, "ID de proyecto inválido.");
+            return;
+        }
+
+        Proyecto proyecto = proyectoService.obtenerProyectoPorId(idProyecto);
+        if (proyecto == null) {
+            redirectWithMessage(request, response, "proyectos", null, "Proyecto no encontrado.");
+            return;
+        }
+
+        List<Tarea> tareas = tareaService.obtenerTareasPorProyecto(idProyecto);
+        request.setAttribute("proyecto", proyecto);
+        request.setAttribute("tareas", tareas);
+        request.getRequestDispatcher("views/tareas.jsp").forward(request, response);
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

@@ -38,4 +38,13 @@ public class HibernateCfg {
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
+
+    /**
+     * Closes the SessionFactory when the application is shutting down.
+     */
+    public static void shutdown() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
+    }
 }

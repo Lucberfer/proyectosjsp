@@ -1,87 +1,69 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.proyectosjsp.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.mycompany.proyectosjsp.services.TareaService;
+import com.mycompany.proyectosjsp.models.Tarea;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
- *
- * @author HP
+ * Servlet for handling task deletion requests.
+ * Only admin users should have access to this functionality.
+ * 
+ * @author Lucas
  */
-@WebServlet(name = "EliminarTareaServlet", urlPatterns = {"/EliminarTareaServlet"})
-public class EliminarTareaServlet extends HttpServlet {
+@WebServlet(name = "EliminarTareaServlet", urlPatterns = {"/eliminarTarea"})
+public class EliminarTareaServlet extends BaseServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet EliminarTareaServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet EliminarTareaServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    private TareaService tareaService;
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    public void init() throws ServletException {
+        super.init();
+        tareaService = new TareaService();
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles POST requests to delete a task.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+
+        // Check if user is admin
+        String userRole = (String) session.getAttribute("rol");
+        if (userRole == null || !userRole.equals("admin")) {
+            redirectWithMessage(request, response, "proyectos", null, "No tienes permisos para eliminar tareas.");
+            return;
+        }
+
+        Long idTarea = getLongParameter(request, "id");
+        if (idTarea == null) {
+            redirectWithMessage(request, response, "proyectos", null, "ID de tarea inválido.");
+            return;
+        }
+
+        // Check if the task exists before attempting deletion
+        Tarea tarea = tareaService.obtenerTareaPorId(idTarea);
+        if (tarea == null) {
+            redirectWithMessage(request, response, "proyectos", null, "La tarea no existe.");
+            return;
+        }
+
+        try {
+            boolean success = tareaService.eliminarTarea(idTarea);
+            if (success) {
+                redirectWithMessage(request, response, "proyectos", "Tarea eliminada exitosamente.", null);
+            } else {
+                redirectWithMessage(request, response, "proyectos", null, "Error al eliminar la tarea.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectWithMessage(request, response, "proyectos", null, "Error inesperado al eliminar la tarea.");
+        }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

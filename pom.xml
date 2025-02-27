@@ -18,11 +18,11 @@
     </properties>
 
     <dependencies>
-        <!-- Servlet API -->
+        <!-- Servlet API (Jakarta EE) -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -40,18 +40,11 @@
             <version>5.6.15.Final</version>
         </dependency>
 
-        <!-- Hibernate MySQL Connector -->
+        <!-- MySQL Connector for Hibernate -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
-        </dependency>
-
-        <!-- Hibernate Entity Manager (JPA) -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.6.15.Final</version>
         </dependency>
 
         <!-- Logging (SLF4J + Log4J) -->
@@ -82,18 +75,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Jakarta EE -->
+        <!-- Jakarta EE API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>9.1.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>3.2.7.ga</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

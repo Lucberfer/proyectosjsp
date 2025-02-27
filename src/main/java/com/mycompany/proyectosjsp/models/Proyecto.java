@@ -3,7 +3,6 @@ package com.mycompany.proyectosjsp.models;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Entity class representing a project.
@@ -37,16 +36,17 @@ public class Proyecto {
     @Column(name = "fecha_fin")
     private Date fechaFin;
 
-    // Project status (in progress/completed...)
+    // Project status (in progress/completed)
     @Column(name = "estado", nullable = false, length = 50)
     private String estado;
 
     // One-to-many relationship: a project can have multiple tasks
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tarea> tareas = new ArrayList<>(); // Initialize list to prevent null errors
+    private List<Tarea> tareas;
 
     // Default constructor
-    public Proyecto() {}
+    public Proyecto() {
+    }
 
     // Constructor with parameters
     public Proyecto(String nombreProyecto, String descripcion, Date fechaInicio, Date fechaFin, String estado) {
@@ -55,7 +55,6 @@ public class Proyecto {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.estado = estado;
-        this.tareas = new ArrayList<>(); // Initialize list in constructor
     }
 
     // Getters & Setters
@@ -115,15 +114,15 @@ public class Proyecto {
         this.tareas = tareas;
     }
 
-    // Override toString() with null-safe checks
+    // Override toString() 
     @Override
     public String toString() {
         return "Proyecto{" +
                 "id=" + id +
                 ", nombreProyecto='" + nombreProyecto + '\'' +
                 ", descripcion='" + descripcion + '\'' +
-                ", fechaInicio=" + (fechaInicio != null ? fechaInicio.toString() : "null") +
-                ", fechaFin=" + (fechaFin != null ? fechaFin.toString() : "null") +
+                ", fechaInicio=" + fechaInicio +
+                ", fechaFin=" + fechaFin +
                 ", estado='" + estado + '\'' +
                 ", tareas=" + (tareas != null ? tareas.size() : "No tasks") +
                 '}';

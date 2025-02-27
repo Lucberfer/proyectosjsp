@@ -1,87 +1,81 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.proyectosjsp.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.mycompany.proyectosjsp.models.Proyecto;
+import com.mycompany.proyectosjsp.services.ProyectoService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Date;
 
 /**
- *
- * @author HP
+ * Servlet for handling project creation requests.
+ * Interacts with ProyectoService to add a new project.
+ * 
+ * @author Lucas
  */
-@WebServlet(name = "AgregarProyectoServlet", urlPatterns = {"/AgregarProyectoServlet"})
+@WebServlet(name = "AgregarProyectoServlet", urlPatterns = {"/agregarProyecto"})
 public class AgregarProyectoServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AgregarProyectoServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AgregarProyectoServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+    private ProyectoService proyectoService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        proyectoService = new ProyectoService(); // Initialize service
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Displays the form to add a new project.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("views/agregarProyecto.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles the project creation process.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8"); // Handle special characters
+
+        String nombreProyecto = request.getParameter("nombre_proyecto");
+        String descripcion = request.getParameter("descripcion");
+        String fechaInicio = request.getParameter("fecha_inicio");
+        String fechaFin = request.getParameter("fecha_fin");
+        String estado = request.getParameter("estado");
+
+        // Validate required fields
+        if (nombreProyecto == null || nombreProyecto.trim().isEmpty()
+                || descripcion == null || descripcion.trim().isEmpty()
+                || estado == null || estado.trim().isEmpty()) {
+
+            request.setAttribute("error", "Todos los campos son necesarios.");
+            request.getRequestDispatcher("views/agregarProyecto.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+            Date fechaInicioSql = Date.valueOf(fechaInicio);
+            Date fechaFinSql = (fechaFin != null && !fechaFin.isEmpty()) ? Date.valueOf(fechaFin) : null;
+
+            Proyecto proyecto = new Proyecto(nombreProyecto, descripcion, fechaInicioSql, fechaFinSql, estado);
+            boolean success = proyectoService.agregarProyecto(proyecto);
+
+            if (success) {
+                response.sendRedirect("proyectos?exito=Proyecto creado exitosamente.");
+            } else {
+                request.setAttribute("error", "Fallo al crear el proyecto.");
+                request.getRequestDispatcher("views/agregarProyecto.jsp").forward(request, response);
+            }
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", "Formato inválido de fechas.");
+            request.getRequestDispatcher("views/agregarProyecto.jsp").forward(request, response);
+        }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

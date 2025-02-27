@@ -46,7 +46,6 @@ public class Tarea {
 
     // Default constructor
     public Tarea() {
-        this.proyecto = new Proyecto(); // Prevents null errors when accessing project attributes
     }
 
     // Constructor with parameters
@@ -116,7 +115,7 @@ public class Tarea {
         this.estado = estado;
     }
 
-    // Override toString() with null-safe checks
+    // Override toString()
     @Override
     public String toString() {
         return "Tarea{" +
@@ -124,8 +123,8 @@ public class Tarea {
                 ", proyecto=" + (proyecto != null ? proyecto.getNombreProyecto() : "No Project") +
                 ", descripcionTarea='" + descripcionTarea + '\'' +
                 ", responsable='" + responsable + '\'' +
-                ", fechaInicio=" + (fechaInicio != null ? fechaInicio.toString() : "null") +
-                ", fechaFin=" + (fechaFin != null ? fechaFin.toString() : "null") +
+                ", fechaInicio=" + fechaInicio +
+                ", fechaFin=" + fechaFin +
                 ", estado='" + estado + '\'' +
                 '}';
     }

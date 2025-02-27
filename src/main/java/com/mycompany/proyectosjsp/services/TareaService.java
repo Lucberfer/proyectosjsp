@@ -2,29 +2,40 @@ package com.mycompany.proyectosjsp.services;
 
 import com.mycompany.proyectosjsp.dao.TareaDAO;
 import com.mycompany.proyectosjsp.models.Tarea;
+
 import java.util.List;
 
 /**
- * Service class for managing task-related business logic.
- * This class interacts with TareaDAO to handle database operations.
+ * Service class for handling business logic related to tasks.
+ * It interacts with TareaDAO for database operations.
  * 
  * @author Lucas
  */
 public class TareaService {
 
-    // DAO instance for handling database operations
     private final TareaDAO tareaDAO;
 
-    /**
-     * Default constructor initializing the DAO
-     */
     public TareaService() {
         this.tareaDAO = new TareaDAO();
     }
 
     /**
-     * Retrieves a task by its ID.
-     * 
+     * Registers a new task.
+     *
+     * @param tarea The task object
+     * @return true if the task is successfully registered, false otherwise
+     */
+    public boolean agregarTarea(Tarea tarea) {
+        if (tarea.getDescripcionTarea() == null || tarea.getDescripcionTarea().trim().isEmpty()) {
+            return false; // Task description is required
+        }
+        tareaDAO.guardar(tarea);
+        return true;
+    }
+
+    /**
+     * Retrieves a task by ID.
+     *
      * @param id The task's ID
      * @return The found Tarea entity or null if not found
      */
@@ -34,68 +45,44 @@ public class TareaService {
 
     /**
      * Retrieves all tasks.
-     * 
+     *
      * @return A list of Tarea entities
      */
     public List<Tarea> listarTareas() {
-        return tareaDAO.obtenerTodos();
+        return tareaDAO.obtenerTodas();
     }
 
     /**
-     * Retrieves all tasks for a specific project.
-     * 
-     * @param idProyecto The ID of the project
-     * @return A list of Tarea entities linked to the project
+     * Retrieves tasks filtered by project.
+     *
+     * @param idProyecto The project ID
+     * @return A list of Tarea entities filtered by project
      */
     public List<Tarea> listarTareasPorProyecto(Long idProyecto) {
         return tareaDAO.obtenerPorProyecto(idProyecto);
     }
 
     /**
-     * Adds a new task.
-     * 
-     * @param tarea The task entity to be saved
-     * @return true if saved successfully, false otherwise
-     */
-    public boolean agregarTarea(Tarea tarea) {
-        try {
-            tareaDAO.guardar(tarea);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
      * Updates an existing task.
-     * 
-     * @param tarea The task entity to be updated
-     * @return true if updated successfully, false otherwise
+     *
+     * @param tarea The updated task object
      */
-    public boolean actualizarTarea(Tarea tarea) {
-        try {
-            tareaDAO.actualizar(tarea);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void actualizarTarea(Tarea tarea) {
+        tareaDAO.actualizar(tarea);
     }
 
     /**
      * Deletes a task by its ID.
-     * 
+     *
      * @param id The ID of the task to be deleted
-     * @return true if deleted successfully, false otherwise
+     * @return true if deletion was successful, false otherwise
      */
     public boolean eliminarTarea(Long id) {
-        try {
+        Tarea tarea = tareaDAO.obtenerPorId(id);
+        if (tarea != null) {
             tareaDAO.eliminar(id);
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
         }
+        return false; // Task not found
     }
 }

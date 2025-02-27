@@ -1,87 +1,118 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.proyectosjsp.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.mycompany.proyectosjsp.models.Proyecto;
+import com.mycompany.proyectosjsp.models.Tarea;
+import com.mycompany.proyectosjsp.services.ProyectoService;
+import com.mycompany.proyectosjsp.services.TareaService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.Date;
 
 /**
- *
- * @author HP
+ * Servlet for handling task creation requests.
+ * Interacts with TareaService to add a new task.
+ * 
+ * @author Lucas
  */
-@WebServlet(name = "AgregarTareaServlet", urlPatterns = {"/AgregarTareaServlet"})
+@WebServlet(name = "AgregarTareaServlet", urlPatterns = {"/agregarTarea"})
 public class AgregarTareaServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AgregarTareaServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AgregarTareaServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+    private TareaService tareaService;
+    private ProyectoService proyectoService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        tareaService = new TareaService();
+        proyectoService = new ProyectoService();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Displays the form to add a new task.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String idProyecto = request.getParameter("id_proyecto");
+
+        if (idProyecto == null || idProyecto.trim().isEmpty()) {
+            response.sendRedirect("proyectos");
+            return;
+        }
+
+        request.setAttribute("idProyecto", idProyecto);
+        request.getRequestDispatcher("views/agregarTarea.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles the task creation process.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8"); // Handle special characters
+
+        String idProyectoParam = request.getParameter("id_proyecto");
+        String descripcionTarea = request.getParameter("descripcion_tarea");
+        String responsable = request.getParameter("responsable");
+        String fechaInicio = request.getParameter("fecha_inicio");
+        String fechaFin = request.getParameter("fecha_fin");
+        String estado = request.getParameter("estado");
+
+        HttpSession session = request.getSession();
+
+        try {
+            // Validate required fields
+            if (idProyectoParam == null || idProyectoParam.trim().isEmpty()
+                    || descripcionTarea == null || descripcionTarea.trim().isEmpty()
+                    || responsable == null || responsable.trim().isEmpty()
+                    || estado == null || estado.trim().isEmpty()) {
+
+                session.setAttribute("error", "Todos los campos son necesarios.");
+                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+                return;
+            }
+
+            // Convert project ID safely
+            Long idProyecto = Long.parseLong(idProyectoParam);
+            Proyecto proyecto = proyectoService.obtenerProyectoPorId(idProyecto);
+
+            if (proyecto == null) {
+                session.setAttribute("error", "Proyecto no encontrado.");
+                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+                return;
+            }
+
+            // Convert dates safely
+            Date fechaInicioSql = Date.valueOf(fechaInicio);
+            Date fechaFinSql = (fechaFin != null && !fechaFin.trim().isEmpty()) ? Date.valueOf(fechaFin) : null;
+
+            // Create task object
+            Tarea tarea = new Tarea(proyecto, descripcionTarea, responsable, fechaInicioSql, fechaFinSql, estado);
+            boolean success = tareaService.agregarTarea(tarea);
+
+            if (success) {
+                session.setAttribute("exito", "Tarea creada exitosamente.");
+                response.sendRedirect("tareas?id_proyecto=" + idProyecto);
+            } else {
+                session.setAttribute("error", "Fallo al crear la tarea.");
+                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("error", "ID de proyecto inválido.");
+            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+        } catch (IllegalArgumentException e) {
+            session.setAttribute("error", "Formato inválido de fechas.");
+            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("error", "Error inesperado al crear la tarea.");
+            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+        }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

@@ -1,87 +1,56 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.proyectosjsp.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- *
- * @author HP
+ * Base servlet that provides common utilities for all servlets.
+ * This class can be extended by other servlets to share common behavior.
+ * 
+ * @author Lucas
  */
-@WebServlet(name = "BaseServlet", urlPatterns = {"/BaseServlet"})
-public class BaseServlet extends HttpServlet {
+public abstract class BaseServlet extends HttpServlet {
+
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Redirects the user to a specified URL with an optional success or error message.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request   The HTTP request object
+     * @param response  The HTTP response object
+     * @param url       The destination URL
+     * @param exito     The success message (optional, can be null)
+     * @param error     The error message (optional, can be null)
+     * @throws IOException If an input or output error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BaseServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BaseServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+    protected void redirectWithMessage(HttpServletRequest request, HttpServletResponse response,
+                                       String url, String exito, String error) throws IOException {
+        if (exito != null) {
+            request.getSession().setAttribute("exito", exito);
+        }
+        if (error != null) {
+            request.getSession().setAttribute("error", error);
+        }
+        response.sendRedirect(url);
+    }
+
+    /**
+     * Retrieves a long parameter from the request, handling errors gracefully.
+     *
+     * @param request  The HTTP request object
+     * @param paramName The name of the parameter
+     * @return The parsed long value, or null if invalid
+     */
+    protected Long getLongParameter(HttpServletRequest request, String paramName) {
+        String paramValue = request.getParameter(paramName);
+        if (paramValue == null || paramValue.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(paramValue);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

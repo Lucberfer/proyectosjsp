@@ -1,100 +1,88 @@
 package com.mycompany.proyectosjsp.services;
 
-import com.mycompany.proyectosjsp.config.HibernateCfg;
-import com.mycompany.proyectosjsp.dao.interfaces.CrudDAO;
+import com.mycompany.proyectosjsp.dao.ProyectoDAO;
 import com.mycompany.proyectosjsp.models.Proyecto;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+
 import java.util.List;
 
 /**
- * DAO class for managing Proyecto entities.
- * Implements the generic CRUD operations from CrudDAO.
+ * Service class for handling business logic related to projects.
+ * It interacts with ProyectoDAO for database operations.
  * 
  * @author Lucas
  */
-public class ProyectoService implements CrudDAO<Proyecto> {
+public class ProyectoService {
+
+    private final ProyectoDAO proyectoDAO;
+
+    public ProyectoService() {
+        this.proyectoDAO = new ProyectoDAO();
+    }
 
     /**
-     * Retrieves a project by its ID.
-     * 
+     * Registers a new project.
+     *
+     * @param proyecto The project object
+     * @return true if the project is successfully registered, false otherwise
+     */
+    public boolean agregarProyecto(Proyecto proyecto) {
+        if (proyecto.getNombreProyecto() == null || proyecto.getNombreProyecto().trim().isEmpty()) {
+            return false; // Invalid project name
+        }
+        proyectoDAO.guardar(proyecto);
+        return true;
+    }
+
+    /**
+     * Retrieves a project by ID.
+     *
      * @param id The project's ID
      * @return The found Proyecto entity or null if not found
      */
-    @Override
-    public Proyecto obtenerPorId(Long id) {
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            return session.get(Proyecto.class, id);
-        }
+    public Proyecto obtenerProyectoPorId(Long id) {
+        return proyectoDAO.obtenerPorId(id);
     }
 
     /**
      * Retrieves all projects.
-     * 
+     *
      * @return A list of Proyecto entities
      */
-    @Override
-    @SuppressWarnings("unchecked")  // Avoids Hibernate warning
-    public List<Proyecto> obtenerTodos() {
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Proyecto", Proyecto.class).list();
-        }
+    public List<Proyecto> listarProyectos() {
+        return proyectoDAO.obtenerTodos();
     }
 
     /**
-     * Saves a new project to the database.
-     * 
-     * @param proyecto The project entity to be saved
+     * Retrieves projects filtered by status.
+     *
+     * @param estado The project status ("en curso" or "completado")
+     * @return A list of Proyecto entities filtered by status
      */
-    @Override
-    public void guardar(Proyecto proyecto) {
-        Transaction tx = null;
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.save(proyecto);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();  // Rollback if error occurs
-            e.printStackTrace();
-        }
+    public List<Proyecto> listarProyectosPorEstado(String estado) {
+        return proyectoDAO.obtenerPorEstado(estado);
     }
 
     /**
-     * Updates an existing project in the database.
-     * 
-     * @param proyecto The project entity to be updated
+     * Updates an existing project.
+     *
+     * @param proyecto The updated project object
      */
-    @Override
-    public void actualizar(Proyecto proyecto) {
-        Transaction tx = null;
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.update(proyecto);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();  // Rollback on error
-            e.printStackTrace();
-        }
+    public void actualizarProyecto(Proyecto proyecto) {
+        proyectoDAO.actualizar(proyecto);
     }
 
     /**
      * Deletes a project by its ID.
-     * 
+     *
      * @param id The ID of the project to be deleted
+     * @return true if deletion was successful, false otherwise
      */
-    @Override
-    public void eliminar(Long id) {
-        Transaction tx = null;
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            Proyecto proyecto = session.get(Proyecto.class, id);
-            if (proyecto != null) {
-                session.delete(proyecto);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();  // Rollback on error
-            e.printStackTrace();
+    public boolean eliminarProyecto(Long id) {
+        Proyecto proyecto = proyectoDAO.obtenerPorId(id);
+        if (proyecto != null) {
+            proyectoDAO.eliminar(id);
+            return true;
         }
+        return false; // Project not found
     }
 }
