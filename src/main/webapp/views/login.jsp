@@ -1,9 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page session="true" %>
-
 <%
-    // Check if the user is already logged in and redirect them to home
-    if (session.getAttribute("usuario") != null) {  // Changed from "username" to "usuario"
+    // Check if the user is already logged in; if so, redirect to home page
+    if (session.getAttribute("usuario") != null) {
         response.sendRedirect("inicio.jsp");
         return;
     }
@@ -16,7 +15,6 @@
     session.removeAttribute("exito");
     session.removeAttribute("error");
 %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,18 +34,13 @@
         <p style="color: red;"><%= errorMessage %></p>
     <% } %>
 
-    <!-- Change action to "login" to match the servlet mapping -->
     <form action="login" method="post">
-        <label for="username">Username:</label>
+        <label for="username">USUARIO:</label>
         <input type="text" id="username" name="username" required><br><br>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-
-        <button type="submit">Login</button>
+        
+        <!-- Two buttons: one for regular user login and one for admin login -->
+        <button type="submit" name="action" value="login_user">USUARIO</button>
+        <button type="submit" name="action" value="login_admin">ADMIN</button>
     </form>
-
-    <br>
-    <p>Don't have an account? <a href="registrar.jsp">Register here</a></p>
 </body>
 </html>

@@ -29,13 +29,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Forward to the login JSP using an absolute path
         request.getRequestDispatcher("/views/login.jsp").forward(request, response);
     }
 
     /**
      * Handles POST requests to process login.
-     * For regular login, only the username is required.
+     * For regular login, only a username is required.
      * For admin login, the username must be "admin".
      */
     @Override
@@ -47,19 +46,19 @@ public class LoginServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         HttpSession session = request.getSession();
-        
+
         if ("login_admin".equals(action)) {
-            // Validate that the username is "admin" for admin login
+            // For admin login, verify that the username is "admin"
             if ("admin".equals(username)) {
                 session.setAttribute("usuario", "admin");
                 session.setAttribute("rol", "admin");
                 response.sendRedirect("inicio.jsp");
             } else {
-                request.setAttribute("error", "Invalid admin credentials.");
+                request.setAttribute("error", "Invalid admin credentials. Please enter 'admin' as the username.");
                 request.getRequestDispatcher("/views/login.jsp").forward(request, response);
             }
         } else if ("login_user".equals(action)) {
-            // Accept any non-empty username as a regular user
+            // For regular login, accept any non-empty username
             session.setAttribute("usuario", username);
             session.setAttribute("rol", "usuario");
             response.sendRedirect("inicio.jsp");
