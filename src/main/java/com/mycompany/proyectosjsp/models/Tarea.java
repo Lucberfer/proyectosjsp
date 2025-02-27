@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Entity class representing a task.
  * This class is mapped to the "tareas" table in the database.
- *
+ * 
  * @author Lucas
  */
 @Entity

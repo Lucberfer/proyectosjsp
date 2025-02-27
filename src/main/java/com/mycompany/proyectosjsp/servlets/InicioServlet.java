@@ -8,25 +8,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet to handle the homepage redirection.
- * Loads the main page for users after login.
+ * Servlet to handle homepage redirection.
+ * Forwards the user to the main home page (inicio.jsp).
  * 
- * @author Lucas
+ * URL mapping: /inicio
  */
 @WebServlet(name = "InicioServlet", urlPatterns = {"/inicio"})
 public class InicioServlet extends HttpServlet {
 
     /**
-     * Handles GET requests and redirects to the main page.
+     * Handles GET requests by forwarding to the home JSP page.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("views/inicio.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inicio.jsp").forward(request, response);
     }
 
     /**
-     * Handles POST requests (redirects to GET method).
+     * Handles POST requests by delegating to doGet.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

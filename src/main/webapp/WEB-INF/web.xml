@@ -3,9 +3,92 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
    version="6.0">
+
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+
+    <!-- Mapeo para el servlet de login -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para el servlet de registro -->
+    <servlet>
+        <servlet-name>RegistroServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.RegistroServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegistroServlet</servlet-name>
+        <url-pattern>/registro</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para el servlet de proyectos -->
+    <servlet>
+        <servlet-name>ProyectoServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.ProyectoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProyectoServlet</servlet-name>
+        <url-pattern>/proyectos</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para el servlet de tareas -->
+    <servlet>
+        <servlet-name>TareaServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.TareaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TareaServlet</servlet-name>
+        <url-pattern>/tareas</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para el servlet de eliminar tarea -->
+    <servlet>
+        <servlet-name>EliminarTareaServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.EliminarTareaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EliminarTareaServlet</servlet-name>
+        <url-pattern>/eliminarTarea</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para el servlet de eliminar proyecto -->
+    <servlet>
+        <servlet-name>EliminarProyectoServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.EliminarProyectoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EliminarProyectoServlet</servlet-name>
+        <url-pattern>/eliminarProyecto</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para la página de error -->
+    <servlet>
+        <servlet-name>ErrorServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.ErrorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ErrorServlet</servlet-name>
+        <url-pattern>/error</url-pattern>
+    </servlet-mapping>
+
+    <!-- Mapeo para la página de inicio -->
+    <servlet>
+        <servlet-name>InicioServlet</servlet-name>
+        <servlet-class>com.mycompany.proyectosjsp.servlets.InicioServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InicioServlet</servlet-name>
+        <url-pattern>/inicio</url-pattern>
+    </servlet-mapping>
+
 </web-app>
+

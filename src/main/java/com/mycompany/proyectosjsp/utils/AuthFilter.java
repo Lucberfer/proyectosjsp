@@ -16,9 +16,9 @@ import java.io.IOException;
  * Filter to restrict access to authenticated users only.
  * Redirects unauthorized users to the login page.
  * 
- * @author Lucas
+ * URL mapping: /* (applies to all routes except public pages)
  */
-@WebFilter("/*") // Applies to all routes except public pages
+@WebFilter("/*")
 public class AuthFilter implements Filter {
 
     @Override
@@ -26,6 +26,11 @@ public class AuthFilter implements Filter {
         // No specific initialization required
     }
 
+    /**
+     * Checks if the user is logged in.
+     * Allows access to public pages (login, registrar, logout, error, and static resources).
+     * If not authenticated, redirects to the login page with an error message.
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -45,15 +50,15 @@ public class AuthFilter implements Filter {
                 || req.getRequestURI().equals(registerURI)
                 || req.getRequestURI().equals(logoutURI)
                 || req.getRequestURI().equals(errorURI)
-                || req.getRequestURI().endsWith(".css") // Allow CSS files
-                || req.getRequestURI().endsWith(".js")  // Allow JavaScript files
-                || req.getRequestURI().endsWith(".png") // Allow images
+                || req.getRequestURI().endsWith(".css")
+                || req.getRequestURI().endsWith(".js")
+                || req.getRequestURI().endsWith(".png")
                 || req.getRequestURI().endsWith(".jpg");
 
         if (loggedIn || isPublicPage) {
-            chain.doFilter(request, response); // Allow access
+            chain.doFilter(request, response);
         } else {
-            res.sendRedirect(loginURI + "?error=Debes iniciar sesión para acceder.");
+            res.sendRedirect(loginURI + "?error=You must log in to access this page.");
         }
     }
 

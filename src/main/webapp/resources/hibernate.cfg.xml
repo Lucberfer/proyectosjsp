@@ -1,6 +1,3 @@
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-   "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-
 <hibernate-configuration>
     <session-factory>
         <!-- Database connection settings -->
@@ -12,18 +9,15 @@
         <!-- Hibernate dialect for MySQL -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
 
-        <!-- Show formatted SQL queries in console (useful for debugging) -->
+        <!-- Show SQL queries in console (for debugging) -->
         <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.format_sql">true</property>
 
         <!-- Automatically create/update database schema -->
         <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <!-- Fix potential timezone issues -->
-        <property name="hibernate.jdbc.time_zone">UTC</property>
-
         <!-- Entity mappings -->
         <mapping class="com.mycompany.proyectosjsp.models.Proyecto"/>
         <mapping class="com.mycompany.proyectosjsp.models.Tarea"/>
+        <mapping class="com.mycompany.proyectosjsp.models.Usuario"/>
     </session-factory>
 </hibernate-configuration>

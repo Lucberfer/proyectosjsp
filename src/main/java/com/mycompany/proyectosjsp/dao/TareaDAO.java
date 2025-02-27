@@ -4,15 +4,33 @@ import com.mycompany.proyectosjsp.config.HibernateCfg;
 import com.mycompany.proyectosjsp.models.Tarea;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 /**
- * DAO class for managing Tarea entities. Implements CRUD operations using
- * Hibernate.
- *
+ * DAO class for managing Tarea entities.
+ * Implements CRUD operations for Tarea using Hibernate.
+ * 
  * @author Lucas
  */
 public class TareaDAO {
+
+    /**
+     * Saves a new task to the database.
+     *
+     * @param tarea The Tarea entity to be saved
+     */
+    public void guardar(Tarea tarea) {
+        Transaction tx = null;
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.save(tarea);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Retrieves a task by its ID.
@@ -38,10 +56,10 @@ public class TareaDAO {
     }
 
     /**
-     * Retrieves all tasks for a specific project.
+     * Retrieves tasks by project ID.
      *
      * @param idProyecto The project ID
-     * @return A list of tasks linked to the project
+     * @return A list of tasks associated with the specified project
      */
     public List<Tarea> obtenerTareasPorProyecto(Long idProyecto) {
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
@@ -52,44 +70,19 @@ public class TareaDAO {
     }
 
     /**
-     * Retrieves all tasks for a specific project.
-     *
-     * @param idProyecto The project ID
-     * @return A list of Tarea entities linked to the project
-     */
-    public List<Tarea> obtenerPorProyecto(Long idProyecto) {
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Tarea WHERE proyecto.id = :idProyecto", Tarea.class)
-                    .setParameter("idProyecto", idProyecto)
-                    .list();
-        }
-    }
-
-    /**
-     * Saves a new task to the database.
-     *
-     * @param tarea The Tarea entity to be saved
-     */
-    public void guardar(Tarea tarea) {
-        Transaction tx;
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.save(tarea);
-            tx.commit();
-        }
-    }
-
-    /**
      * Updates an existing task in the database.
      *
      * @param tarea The Tarea entity to be updated
      */
     public void actualizar(Tarea tarea) {
-        Transaction tx;
+        Transaction tx = null;
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
             session.update(tarea);
             tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
         }
     }
 
@@ -99,7 +92,7 @@ public class TareaDAO {
      * @param id The ID of the task to be deleted
      */
     public void eliminar(Long id) {
-        Transaction tx;
+        Transaction tx = null;
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
             Tarea tarea = session.get(Tarea.class, id);
@@ -107,6 +100,9 @@ public class TareaDAO {
                 session.delete(tarea);
             }
             tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
         }
     }
 }

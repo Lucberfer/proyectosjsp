@@ -16,16 +16,20 @@ import java.io.IOException;
  * Filter to restrict access to administrator-only pages.
  * Redirects unauthorized users to the login page.
  * 
- * @author Lucas
+ * URL mapping: /admin/*
  */
-@WebFilter("/admin/*") // Applies to all routes under /admin/
+@WebFilter("/admin/*")
 public class AdminFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // No specific initialization required
+        // No initialization required
     }
 
+    /**
+     * Checks if the user is logged in and has admin privileges.
+     * If not, redirects to the login page with an error message.
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -34,19 +38,17 @@ public class AdminFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
-        // Check if user is logged in and has admin privileges
         if (session == null || session.getAttribute("usuario") == null ||
-            !"admin".equals(session.getAttribute("rol"))) {
-            
-            res.sendRedirect(req.getContextPath() + "/login.jsp?error=Acceso restringido. Debes ser administrador.");
+                !"admin".equals(session.getAttribute("rol"))) {
+            res.sendRedirect(req.getContextPath() + "/login.jsp?error=Access denied. Admins only.");
             return;
         }
-
-        chain.doFilter(request, response); // Allow access if user is admin
+        
+        chain.doFilter(request, response);
     }
 
     @Override
     public void destroy() {
-        // No specific cleanup required
+        // No cleanup required
     }
 }

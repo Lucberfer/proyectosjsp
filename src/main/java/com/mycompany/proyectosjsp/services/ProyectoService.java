@@ -2,7 +2,6 @@ package com.mycompany.proyectosjsp.services;
 
 import com.mycompany.proyectosjsp.dao.ProyectoDAO;
 import com.mycompany.proyectosjsp.models.Proyecto;
-
 import java.util.List;
 
 /**
@@ -26,6 +25,7 @@ public class ProyectoService {
      * @return true if the project is successfully registered, false otherwise
      */
     public boolean agregarProyecto(Proyecto proyecto) {
+        // Validate the project name
         if (proyecto.getNombreProyecto() == null || proyecto.getNombreProyecto().trim().isEmpty()) {
             return false; // Invalid project name
         }

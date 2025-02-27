@@ -2,13 +2,12 @@ package com.mycompany.proyectosjsp.services;
 
 import com.mycompany.proyectosjsp.dao.TareaDAO;
 import com.mycompany.proyectosjsp.models.Tarea;
-
 import java.util.List;
 
 /**
- * Service class for handling business logic related to tasks. It interacts with
- * TareaDAO for database operations.
- *
+ * Service class for handling business logic related to tasks.
+ * It interacts with TareaDAO for database operations.
+ * 
  * @author Lucas
  */
 public class TareaService {
@@ -60,16 +59,6 @@ public class TareaService {
      */
     public List<Tarea> obtenerTareasPorProyecto(Long idProyecto) {
         return tareaDAO.obtenerTareasPorProyecto(idProyecto);
-    }
-
-    /**
-     * Retrieves tasks filtered by project.
-     *
-     * @param idProyecto The project ID
-     * @return A list of Tarea entities filtered by project
-     */
-    public List<Tarea> listarTareasPorProyecto(Long idProyecto) {
-        return tareaDAO.obtenerPorProyecto(idProyecto);
     }
 
     /**

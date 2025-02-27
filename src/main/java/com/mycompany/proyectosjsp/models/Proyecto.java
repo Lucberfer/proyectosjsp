@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Entity class representing a project.
  * This class is mapped to the "proyectos" table in the database.
- *
+ * 
  * @author Lucas
  */
 @Entity

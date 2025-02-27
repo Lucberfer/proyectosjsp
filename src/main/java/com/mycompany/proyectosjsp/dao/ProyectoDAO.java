@@ -4,15 +4,33 @@ import com.mycompany.proyectosjsp.config.HibernateCfg;
 import com.mycompany.proyectosjsp.models.Proyecto;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 /**
  * DAO class for managing Proyecto entities.
- * Implements CRUD operations using Hibernate.
+ * Implements CRUD operations for Proyecto using Hibernate.
  * 
  * @author Lucas
  */
 public class ProyectoDAO {
+
+    /**
+     * Saves a new project to the database.
+     *
+     * @param proyecto The Proyecto entity to be saved
+     */
+    public void guardar(Proyecto proyecto) {
+        Transaction tx = null;
+        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.save(proyecto);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Retrieves a project by its ID.
@@ -38,7 +56,7 @@ public class ProyectoDAO {
     }
 
     /**
-     * Retrieves projects by status.
+     * Retrieves projects by their status.
      *
      * @param estado The project status ("en curso" or "completado")
      * @return A list of Proyecto entities filtered by status
@@ -52,30 +70,19 @@ public class ProyectoDAO {
     }
 
     /**
-     * Saves a new project to the database.
-     *
-     * @param proyecto The Proyecto entity to be saved
-     */
-    public void guardar(Proyecto proyecto) {
-        Transaction tx;
-        try (Session session = HibernateCfg.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.save(proyecto);
-            tx.commit();
-        }
-    }
-
-    /**
      * Updates an existing project in the database.
      *
      * @param proyecto The Proyecto entity to be updated
      */
     public void actualizar(Proyecto proyecto) {
-        Transaction tx;
+        Transaction tx = null;
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
             session.update(proyecto);
             tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
         }
     }
 
@@ -85,7 +92,7 @@ public class ProyectoDAO {
      * @param id The ID of the project to be deleted
      */
     public void eliminar(Long id) {
-        Transaction tx;
+        Transaction tx = null;
         try (Session session = HibernateCfg.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
             Proyecto proyecto = session.get(Proyecto.class, id);
@@ -93,6 +100,9 @@ public class ProyectoDAO {
                 session.delete(proyecto);
             }
             tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
         }
     }
 }
