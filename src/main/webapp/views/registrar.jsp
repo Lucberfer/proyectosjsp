@@ -1,25 +1,32 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!--
+  This is the user registration page.
+  Users can register by providing a username and password.
+-->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
+    <title>User Registration</title>
+    <!-- Add your CSS files or styles here -->
 </head>
 <body>
-    <h1>Registro de Usuario</h1>
+    <h1>User Registration</h1>
+    <!-- Display error message if exists -->
     <c:if test="${not empty error}">
         <div style="color: red;">${error}</div>
     </c:if>
     <form action="${pageContext.request.contextPath}/RegistroServlet" method="post">
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" name="username" required>
-        <br><br>
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
-        <br><br>
-        <input type="submit" value="Registrarse">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+        <br/><br/>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        <br/><br/>
+        <input type="submit" value="Register" />
     </form>
-    <br>
-    <a href="${pageContext.request.contextPath}/views/login.jsp">Volver a Login</a>
+    <br/>
+    <a href="${pageContext.request.contextPath}/views/login.jsp">Vuelta al Inicio</a>
 </body>
 </html>

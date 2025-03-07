@@ -4,18 +4,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Listado de Usuarios</title>
-    <!-- Add your CSS or styles here -->
+    <title>Lista de Usuarios</title>
+    <!-- Add your CSS files or styles here -->
 </head>
 <body>
-    <h1>Listado de Usuarios</h1>
+    <h1>Lista de usuarios</h1>
     <table border="1">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th>Acciones</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -25,14 +25,16 @@
                     <td>${usuario.username}</td>
                     <td>${usuario.rol}</td>
                     <td>
+                        <!-- Edit and Delete links for each user -->
                         <a href="${pageContext.request.contextPath}/UsuarioServlet?action=edit&id=${usuario.id}">Editar</a>
-                        <a href="${pageContext.request.contextPath}/UsuarioServlet?action=delete&id=${usuario.id}" onclick="return confirm('¿Está seguro de eliminar este usuario?');">Eliminar</a>
+                        |
+                        <a href="${pageContext.request.contextPath}/UsuarioServlet?action=delete&id=${usuario.id}" onclick="return confirm('Estás seguro de que quieres eliminar este usuario?');">Delete</a>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    <br>
-    <a href="${pageContext.request.contextPath}/views/admin/admin.jsp">Volver al Panel de Administración</a>
+    <br/>
+    <a href="${pageContext.request.contextPath}/views/admin/admin.jsp">Vuelta al menú Administrador</a>
 </body>
 </html>

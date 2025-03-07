@@ -6,19 +6,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Tareas</title>
-    <!-- Puedes agregar tus hojas de estilo CSS aquí -->
+    <!-- Add your CSS files or styles here -->
 </head>
 <body>
     <h1>Lista de Tareas</h1>
+    <!-- Table to display tasks -->
     <table border="1">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Descripción</th>
                 <th>Responsable</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Fin</th>
+                <th>Fecha de Inicio</th>
+                <th>Fecha de Finalización</th>
                 <th>Estado</th>
+                <th>Proyecto</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -31,18 +33,21 @@
                     <td><fmt:formatDate value="${tarea.fechaInicio}" pattern="dd/MM/yyyy" /></td>
                     <td><fmt:formatDate value="${tarea.fechaFin}" pattern="dd/MM/yyyy" /></td>
                     <td>${tarea.estado}</td>
+                    <td>${tarea.proyecto.nombre}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${projectId}">Editar</a>
-                        <a href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${projectId}"
-                           onclick="return confirm('¿Está seguro de eliminar esta tarea?');">Eliminar</a>
+                        <a href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${tarea.proyecto.id}">Editar</a>
+                        |
+                        <a href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${tarea.proyecto.id}" onclick="return confirm('Estas seguro de que quieres eliminar la Tarea?');">Delete</a>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    <br>
-    <a href="${pageContext.request.contextPath}/views/tareas/agregarTarea.jsp?projectId=${projectId}">Agregar Tarea</a>
-    <br>
-    <a href="${pageContext.request.contextPath}/ProyectoServlet?action=list">Volver a Proyectos</a>
+    <br/>
+    <!-- Link to add a new task -->
+    <a href="${pageContext.request.contextPath}/TareaServlet?action=new">Añádir una nueva Tarea</a>
+    <br/><br/>
+    <!-- Link to return to the project list (or admin panel) -->
+    <a href="${pageContext.request.contextPath}/ProyectoServlet?action=list">Vuelta a la Lista de Proyectos</a>
 </body>
 </html>

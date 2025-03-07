@@ -1,44 +1,62 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Agregar Tarea</title>
+    <!-- Include your CSS files or styles here -->
 </head>
 <body>
     <h1>Agregar Tarea</h1>
+    <!-- Form to create a new task -->
     <form action="${pageContext.request.contextPath}/TareaServlet" method="post">
-        <input type="hidden" name="action" value="create">
-        <!-- Se asume que se recibe el projectId para vincular la tarea al proyecto -->
-        <input type="hidden" name="projectId" value="${param.projectId}">
+        <!-- Hidden field to specify the "create" action -->
+        <input type="hidden" name="action" value="create" />
         
+        <!-- Task description input -->
         <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" name="descripcion" required>
-        <br><br>
+        <input type="text" id="descripcion" name="descripcion" required />
+        <br/><br/>
         
+        <!-- Responsible person input -->
         <label for="responsable">Responsable:</label>
-        <input type="text" id="responsable" name="responsable" required>
-        <br><br>
+        <input type="text" id="responsable" name="responsable" required />
+        <br/><br/>
         
-        <label for="fechaInicio">Fecha de Inicio:</label>
-        <input type="date" id="fechaInicio" name="fechaInicio" required>
-        <br><br>
+        <!-- Start date input with a date picker -->
+        <label for="fechaInicio">Fecha de inicio:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" required />
+        <br/><br/>
         
-        <label for="fechaFin">Fecha de Fin:</label>
-        <input type="date" id="fechaFin" name="fechaFin" required>
-        <br><br>
+        <!-- End date input with a date picker -->
+        <label for="fechaFin">Fecha de fin:</label>
+        <input type="date" id="fechaFin" name="fechaFin" required />
+        <br/><br/>
         
+        <!-- Status dropdown -->
         <label for="estado">Estado:</label>
         <select id="estado" name="estado" required>
             <option value="sin iniciar">Sin iniciar</option>
             <option value="en proceso">En proceso</option>
-            <option value="finalizado">Finalizado</option>
+            <option value="finalizado">Completado</option>
         </select>
-        <br><br>
+        <br/><br/>
         
-        <input type="submit" value="Crear Tarea">
+        <!-- Project dropdown: the list of projects is loaded from the servlet -->
+        <label for="projectId">Proyecto:</label>
+        <select id="projectId" name="projectId" required>
+            <c:forEach var="proyecto" items="${proyectos}">
+                <option value="${proyecto.id}">${proyecto.nombre}</option>
+            </c:forEach>
+        </select>
+        <br/><br/>
+        
+        <!-- Submit button -->
+        <input type="submit" value="Crear Tarea" />
     </form>
-    <br>
-    <a href="${pageContext.request.contextPath}/TareaServlet?action=list&projectId=${param.projectId}">Volver a la lista de tareas</a>
+    <br/>
+    <!-- Link to go back to the task list -->
+    <a href="${pageContext.request.contextPath}/TareaServlet?action=list">Volver a la Lista de Tareas</a>
 </body>
 </html>

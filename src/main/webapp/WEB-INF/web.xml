@@ -56,6 +56,17 @@
     <servlet-name>TareaServlet</servlet-name>
     <url-pattern>/TareaServlet</url-pattern>
   </servlet-mapping>
+  
+  <!-- Usuario Servlet -->
+<servlet>
+    <servlet-name>UsuarioServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.UsuarioServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UsuarioServlet</servlet-name>
+    <url-pattern>/UsuarioServlet</url-pattern>
+</servlet-mapping>
+
 
   <!-- Auth Filter -->
   <filter>

@@ -13,37 +13,38 @@ public class RegistroServlet extends HttpServlet {
     private UsuarioService usuarioService = new UsuarioService();
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Forward to the registration JSP page
+        request.getRequestDispatcher("/views/registrar.jsp").forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Recoger datos del formulario de registro
+        // Retrieve registration parameters from the form
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        
-        // Opcional: Verificar si el usuario ya existe
-        Usuario usuarioExistente = usuarioService.findUsuarioByCredentials(username, password);
-        if(usuarioExistente != null) {
-            request.setAttribute("error", "El usuario ya existe. Intenta con otro.");
+
+        // Optionally check if the user already exists
+        Usuario existingUser = usuarioService.findUsuarioByCredentials(username, password);
+        if(existingUser != null) {
+            // If user exists, set error message and forward back to registration page
+            request.setAttribute("error", "Usuario existente. Prueba con otro.");
             request.getRequestDispatcher("/views/registrar.jsp").forward(request, response);
             return;
         }
-        
-        // Crear un nuevo usuario con rol por defecto "invitado"
-        Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setUsername(username);
-        nuevoUsuario.setPassword(password);
-        nuevoUsuario.setRol("invitado");
-        
-        // Guardar el usuario en la base de datos
-        usuarioService.createUsuario(nuevoUsuario);
-        
-        // Redirigir al login
+
+        // Create a new user with the default role "invitado"
+        Usuario newUser = new Usuario();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.setRol("invitado");
+
+        // Persist the new user in the database
+        usuarioService.createUsuario(newUser);
+
+        // Redirect to the login page after successful registration
         response.sendRedirect(request.getContextPath() + "/views/login.jsp");
-    }
-    
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Redirigir al formulario de registro
-        request.getRequestDispatcher("/views/registrar.jsp").forward(request, response);
     }
 }

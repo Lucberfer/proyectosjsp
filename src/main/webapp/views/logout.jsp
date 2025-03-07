@@ -7,6 +7,6 @@
 </head>
 <body>
     <h1>You have logged out</h1>
-    <p>Your session has been terminated. Click <a href="${pageContext.request.contextPath}/views/login.jsp">here</a> to log in again.</p>
+    <p>Your session has been terminated. Click <a href="${pageContext.request.contextPath}/views/login.jsp">here</a> Al Inicio de nuevo</p>
 </body>
 </html>
