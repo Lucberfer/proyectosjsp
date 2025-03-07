@@ -1,13 +1,7 @@
--- Drop database if it exists (opcional)
-DROP DATABASE IF EXISTS proyectos;
-
--- Create database
+-- DROP DATABASE IF EXISTS proyectos;
 CREATE DATABASE proyectos;
-
--- Select the database
 USE proyectos;
 
--- Tabla de Usuarios
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -15,7 +9,6 @@ CREATE TABLE usuarios (
     rol VARCHAR(50) NOT NULL
 );
 
--- Tabla de Proyectos
 CREATE TABLE proyectos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(200) NOT NULL,
@@ -29,7 +22,6 @@ CREATE TABLE proyectos (
         ON DELETE SET NULL
 );
 
--- Tabla de Tareas
 CREATE TABLE tareas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     descripcion TEXT,
@@ -42,3 +34,6 @@ CREATE TABLE tareas (
         REFERENCES proyectos(id)
         ON DELETE CASCADE
 );
+
+INSERT INTO usuarios (username, password, rol) VALUES ('admin', 'admin', 'admin');
+
