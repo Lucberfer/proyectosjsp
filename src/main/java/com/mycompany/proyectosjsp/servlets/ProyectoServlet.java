@@ -1,91 +1,136 @@
 package com.mycompany.proyectosjsp.servlets;
 
-import com.mycompany.proyectosjsp.models.Proyecto;
-import com.mycompany.proyectosjsp.services.ProyectoService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.mycompany.proyectosjsp.model.Proyecto;
+import com.mycompany.proyectosjsp.service.ProyectoService;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet for handling project-related HTTP requests.
- * It interacts with ProyectoService to manage project operations.
- * 
- * URL mapping: /proyectos
- */
-@WebServlet(name = "ProyectoServlet", urlPatterns = {"/proyectos"})
 public class ProyectoServlet extends HttpServlet {
 
-    private ProyectoService proyectoService;
+    private ProyectoService proyectoService = new ProyectoService();
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        // Initialize the project service
-        proyectoService = new ProyectoService();
-    }
-
-    /**
-     * Handles GET requests: Lists all projects, optionally filtered by status.
-     * If a status parameter is provided, only projects with that status are returned.
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String estado = request.getParameter("estado");
-        List<Proyecto> proyectos;
-
-        if (estado != null && !estado.isEmpty()) {
-            // Filter projects by the given status
-            proyectos = proyectoService.listarProyectosPorEstado(estado);
-        } else {
-            // Retrieve all projects
-            proyectos = proyectoService.listarProyectos();
+        // Determine the action to perform
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "list";
         }
-
-        // Set the projects list as a request attribute for the JSP to use
-        request.setAttribute("proyectos", proyectos);
-
-        // Forward the request to the projects JSP page using an absolute path
-        request.getRequestDispatcher("/views/proyectos.jsp").forward(request, response);
+        switch (action) {
+            case "list":
+                listProjects(request, response);
+                break;
+            case "edit":
+                showEditForm(request, response);
+                break;
+            case "delete":
+                deleteProject(request, response);
+                break;
+            default:
+                listProjects(request, response);
+                break;
+        }
     }
 
-    /**
-     * Handles POST requests: Creates a new project.
-     * Reads form parameters, creates a Proyecto object, and calls the service to persist it.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve form parameters
-        String nombreProyecto = request.getParameter("nombre_proyecto");
-        String descripcion = request.getParameter("descripcion");
-        String fechaInicio = request.getParameter("fecha_inicio");
-        String fechaFin = request.getParameter("fecha_fin");
-        String estado = request.getParameter("estado");
-
-        // Create the Proyecto object using form values
-        Proyecto proyecto = new Proyecto(
-                nombreProyecto,
-                descripcion,
-                java.sql.Date.valueOf(fechaInicio),
-                (fechaFin != null && !fechaFin.isEmpty()) ? java.sql.Date.valueOf(fechaFin) : null,
-                estado
-        );
-
-        // Attempt to add the project using the service
-        boolean success = proyectoService.agregarProyecto(proyecto);
-
-        if (success) {
-            // If successful, redirect to the projects page with a success message
-            response.sendRedirect("proyectos?exito=Project created successfully.");
-        } else {
-            // If not, forward back to the add project form with an error message
-            request.setAttribute("error", "Failed to create the project.");
-            request.getRequestDispatcher("/views/agregarProyecto.jsp").forward(request, response);
+        // Determine the action to perform
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "";
+        }
+        switch (action) {
+            case "create":
+                createProject(request, response);
+                break;
+            case "update":
+                updateProject(request, response);
+                break;
+            default:
+                doGet(request, response);
+                break;
         }
     }
+
+    private void listProjects(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Retrieve all projects and forward to the listing JSP
+        List<Proyecto> proyectos = proyectoService.findAllProyectos();
+        request.setAttribute("proyectos", proyectos);
+        request.getRequestDispatcher("/views/proyectos/listaProyectos.jsp").forward(request, response);
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Retrieve the project to edit and forward to the edit form JSP
+        int id = Integer.parseInt(request.getParameter("id"));
+        Proyecto proyecto = proyectoService.findProyectoById(id);
+        request.setAttribute("proyecto", proyecto);
+        request.getRequestDispatcher("/views/proyectos/editarProyecto.jsp").forward(request, response);
+    }
+
+    private void deleteProject(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        // Delete the specified project and redirect to the project list
+        int id = Integer.parseInt(request.getParameter("id"));
+        proyectoService.deleteProyecto(id);
+        response.sendRedirect(request.getContextPath() + "/ProyectoServlet?action=list");
+    }
+
+    private void createProject(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Proyecto proyecto = new Proyecto();
+        proyecto.setNombre(request.getParameter("nombre"));
+        proyecto.setDescripcion(request.getParameter("descripcion"));
+
+        try {
+            // Utilizamos el formato "yyyy-MM-dd" que es el que devuelve el input type="date"
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaInicio = sdf.parse(request.getParameter("fechaInicio"));
+            Date fechaFin = sdf.parse(request.getParameter("fechaFin"));
+            proyecto.setFechaInicio(fechaInicio);
+            proyecto.setFechaFin(fechaFin);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // Asignamos el estado desde el desplegable
+        proyecto.setEstado(request.getParameter("estado"));
+
+        // Aquí podrías asignar el usuario creador, si lo obtienes de la sesión
+        proyectoService.createProyecto(proyecto);
+        response.sendRedirect(request.getContextPath() + "/ProyectoServlet?action=list");
+    }
+
+    private void updateProject(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Proyecto proyecto = proyectoService.findProyectoById(id);
+        if (proyecto != null) {
+            proyecto.setNombre(request.getParameter("nombre"));
+            proyecto.setDescripcion(request.getParameter("descripcion"));
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date fechaInicio = sdf.parse(request.getParameter("fechaInicio"));
+                Date fechaFin = sdf.parse(request.getParameter("fechaFin"));
+                proyecto.setFechaInicio(fechaInicio);
+                proyecto.setFechaFin(fechaFin);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            proyecto.setEstado(request.getParameter("estado"));
+            proyectoService.updateProyecto(proyecto);
+        }
+        response.sendRedirect(request.getContextPath() + "/ProyectoServlet?action=list");
+    }
+
 }

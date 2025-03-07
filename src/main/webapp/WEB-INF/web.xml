@@ -1,94 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
-   version="6.0">
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" 
+         version="4.0">
 
-    <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
-    </session-config>
+  <display-name>proyectosjsp</display-name>
 
-    <!-- Mapeo para el servlet de login -->
-    <servlet>
-        <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.LoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login</url-pattern>
-    </servlet-mapping>
+  <!-- Login Servlet -->
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+  
+  <!-- Registro Servlet -->
+  <servlet>
+    <servlet-name>RegistroServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.RegistroServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RegistroServlet</servlet-name>
+    <url-pattern>/RegistroServlet</url-pattern>
+  </servlet-mapping>
 
-    <!-- Mapeo para el servlet de registro -->
-    <servlet>
-        <servlet-name>RegistroServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.RegistroServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>RegistroServlet</servlet-name>
-        <url-pattern>/registro</url-pattern>
-    </servlet-mapping>
+  <!-- Logout Servlet -->
+  <servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.LogoutServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/LogoutServlet</url-pattern>
+  </servlet-mapping>
 
-    <!-- Mapeo para el servlet de proyectos -->
-    <servlet>
-        <servlet-name>ProyectoServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.ProyectoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ProyectoServlet</servlet-name>
-        <url-pattern>/proyectos</url-pattern>
-    </servlet-mapping>
+  <!-- Proyecto Servlet -->
+  <servlet>
+    <servlet-name>ProyectoServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.ProyectoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProyectoServlet</servlet-name>
+    <url-pattern>/ProyectoServlet</url-pattern>
+  </servlet-mapping>
 
-    <!-- Mapeo para el servlet de tareas -->
-    <servlet>
-        <servlet-name>TareaServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.TareaServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TareaServlet</servlet-name>
-        <url-pattern>/tareas</url-pattern>
-    </servlet-mapping>
+  <!-- Tarea Servlet -->
+  <servlet>
+    <servlet-name>TareaServlet</servlet-name>
+    <servlet-class>com.mycompany.proyectosjsp.servlets.TareaServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TareaServlet</servlet-name>
+    <url-pattern>/TareaServlet</url-pattern>
+  </servlet-mapping>
 
-    <!-- Mapeo para el servlet de eliminar tarea -->
-    <servlet>
-        <servlet-name>EliminarTareaServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.EliminarTareaServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>EliminarTareaServlet</servlet-name>
-        <url-pattern>/eliminarTarea</url-pattern>
-    </servlet-mapping>
+  <!-- Auth Filter -->
+  <filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>com.mycompany.proyectosjsp.filter.AuthFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
-    <!-- Mapeo para el servlet de eliminar proyecto -->
-    <servlet>
-        <servlet-name>EliminarProyectoServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.EliminarProyectoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>EliminarProyectoServlet</servlet-name>
-        <url-pattern>/eliminarProyecto</url-pattern>
-    </servlet-mapping>
+  <!-- Admin Filter -->
+  <filter>
+    <filter-name>AdminFilter</filter-name>
+    <filter-class>com.mycompany.proyectosjsp.filter.AdminFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>AdminFilter</filter-name>
+    <url-pattern>/views/admin/*</url-pattern>
+  </filter-mapping>
 
-    <!-- Mapeo para la página de error -->
-    <servlet>
-        <servlet-name>ErrorServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.ErrorServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ErrorServlet</servlet-name>
-        <url-pattern>/error</url-pattern>
-    </servlet-mapping>
-
-    <!-- Mapeo para la página de inicio -->
-    <servlet>
-        <servlet-name>InicioServlet</servlet-name>
-        <servlet-class>com.mycompany.proyectosjsp.servlets.InicioServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>InicioServlet</servlet-name>
-        <url-pattern>/inicio</url-pattern>
-    </servlet-mapping>
+  <!-- Welcome File -->
+  <welcome-file-list>
+    <welcome-file>views/login.jsp</welcome-file>
+  </welcome-file-list>
 
 </web-app>
-

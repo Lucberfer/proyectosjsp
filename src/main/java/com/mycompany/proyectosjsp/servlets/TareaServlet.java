@@ -1,130 +1,141 @@
 package com.mycompany.proyectosjsp.servlets;
 
-import com.mycompany.proyectosjsp.models.Tarea;
-import com.mycompany.proyectosjsp.models.Proyecto;
-import com.mycompany.proyectosjsp.services.TareaService;
-import com.mycompany.proyectosjsp.services.ProyectoService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import com.mycompany.proyectosjsp.model.Tarea;
+import com.mycompany.proyectosjsp.model.Proyecto;
+import com.mycompany.proyectosjsp.service.TareaService;
 import java.io.IOException;
-import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet for handling task-related HTTP requests.
- * It interacts with TareaService to manage tasks for a project.
- *
- * URL mapping: /tareas
- */
-@WebServlet(name = "TareaServlet", urlPatterns = {"/tareas"})
 public class TareaServlet extends HttpServlet {
 
-    private TareaService tareaService;
-    private ProyectoService proyectoService;
+    private TareaService tareaService = new TareaService();
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        // Initialize the task service and project service
-        tareaService = new TareaService();
-        proyectoService = new ProyectoService();
-    }
-
-    /**
-     * Handles GET requests: Lists tasks for a specific project.
-     * Expects a parameter "id_proyecto" representing the project ID.
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Safely convert the project ID from the request parameter
-        Long idProyecto = Long.parseLong(request.getParameter("id_proyecto"));
-
-        // Retrieve the project and its associated tasks using the service
-        Proyecto proyecto = proyectoService.obtenerProyectoPorId(idProyecto);
-        List<Tarea> tareas = tareaService.obtenerTareasPorProyecto(idProyecto);
-
-        // Set the project and tasks as request attributes for the JSP
-        request.setAttribute("proyecto", proyecto);
-        request.setAttribute("tareas", tareas);
-
-        // Forward the request to the tasks JSP page using an absolute path
-        request.getRequestDispatcher("/views/tareas.jsp").forward(request, response);
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "list";
+        }
+        switch (action) {
+            case "list":
+                listTasks(request, response);
+                break;
+            case "edit":
+                showEditForm(request, response);
+                break;
+            case "delete":
+                deleteTask(request, response);
+                break;
+            default:
+                listTasks(request, response);
+                break;
+        }
     }
 
-    /**
-     * Handles POST requests: Creates a new task for a project.
-     * Expects form parameters for task details including the project ID.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Set character encoding to handle special characters
-        request.setCharacterEncoding("UTF-8");
-
-        // Retrieve form parameters
-        String idProyectoParam = request.getParameter("id_proyecto");
-        String descripcionTarea = request.getParameter("descripcion_tarea");
-        String responsable = request.getParameter("responsable");
-        String fechaInicio = request.getParameter("fecha_inicio");
-        String fechaFin = request.getParameter("fecha_fin");
-        String estado = request.getParameter("estado");
-
-        HttpSession session = request.getSession();
-
-        try {
-            // Validate required fields
-            if (idProyectoParam == null || idProyectoParam.trim().isEmpty()
-                    || descripcionTarea == null || descripcionTarea.trim().isEmpty()
-                    || responsable == null || responsable.trim().isEmpty()
-                    || estado == null || estado.trim().isEmpty()) {
-
-                session.setAttribute("error", "All fields are required.");
-                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
-                return;
-            }
-
-            // Convert the project ID safely
-            Long idProyecto = Long.parseLong(idProyectoParam);
-            Proyecto proyecto = proyectoService.obtenerProyectoPorId(idProyecto);
-
-            if (proyecto == null) {
-                session.setAttribute("error", "Project not found.");
-                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
-                return;
-            }
-
-            // Convert dates safely
-            Date fechaInicioSql = Date.valueOf(fechaInicio);
-            Date fechaFinSql = (fechaFin != null && !fechaFin.trim().isEmpty()) ? Date.valueOf(fechaFin) : null;
-
-            // Create the task object using the retrieved values
-            Tarea tarea = new Tarea(proyecto, descripcionTarea, responsable, fechaInicioSql, fechaFinSql, estado);
-            boolean success = tareaService.agregarTarea(tarea);
-
-            if (success) {
-                // If successful, set a success message and redirect to the tasks page
-                session.setAttribute("exito", "Task created successfully.");
-                response.sendRedirect("tareas?id_proyecto=" + idProyecto);
-            } else {
-                // If task creation fails, set an error message and redirect back to the add task form
-                session.setAttribute("error", "Failed to create the task.");
-                response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
-            }
-        } catch (NumberFormatException e) {
-            session.setAttribute("error", "Invalid project ID.");
-            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
-        } catch (IllegalArgumentException e) {
-            session.setAttribute("error", "Invalid date format.");
-            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute("error", "Unexpected error while creating the task.");
-            response.sendRedirect("agregarTarea?id_proyecto=" + idProyectoParam);
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "";
+        }
+        switch (action) {
+            case "create":
+                createTask(request, response);
+                break;
+            case "update":
+                updateTask(request, response);
+                break;
+            default:
+                doGet(request, response);
+                break;
         }
     }
+
+    private void listTasks(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        List<Tarea> tareas = tareaService.findTareasByProjectId(projectId);
+        request.setAttribute("tareas", tareas);
+        request.setAttribute("projectId", projectId);
+        request.getRequestDispatcher("/views/tareas/listaTareas.jsp").forward(request, response);
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Tarea tarea = tareaService.findTareaById(id);
+        request.setAttribute("tarea", tarea);
+        request.getRequestDispatcher("/views/tareas/editarTarea.jsp").forward(request, response);
+    }
+
+    private void deleteTask(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        tareaService.deleteTarea(id);
+        response.sendRedirect(request.getContextPath() + "/TareaServlet?action=list&projectId=" + projectId);
+    }
+
+    private void createTask(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Tarea tarea = new Tarea();
+        tarea.setDescripcion(request.getParameter("descripcion"));
+        tarea.setResponsable(request.getParameter("responsable"));
+
+        try {
+            // Usamos el formato "yyyy-MM-dd"
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaInicio = sdf.parse(request.getParameter("fechaInicio"));
+            Date fechaFin = sdf.parse(request.getParameter("fechaFin"));
+            tarea.setFechaInicio(fechaInicio);
+            tarea.setFechaFin(fechaFin);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // Asignamos el estado seleccionado
+        tarea.setEstado(request.getParameter("estado"));
+
+        // Asociar la tarea al proyecto correspondiente
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        Proyecto proyecto = new Proyecto();
+        proyecto.setId(projectId);
+        tarea.setProyecto(proyecto);
+
+        tareaService.createTarea(tarea);
+        response.sendRedirect(request.getContextPath() + "/TareaServlet?action=list&projectId=" + projectId);
+    }
+
+    private void updateTask(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Tarea tarea = tareaService.findTareaById(id);
+        if (tarea != null) {
+            tarea.setDescripcion(request.getParameter("descripcion"));
+            tarea.setResponsable(request.getParameter("responsable"));
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date fechaInicio = sdf.parse(request.getParameter("fechaInicio"));
+                Date fechaFin = sdf.parse(request.getParameter("fechaFin"));
+                tarea.setFechaInicio(fechaInicio);
+                tarea.setFechaFin(fechaFin);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            tarea.setEstado(request.getParameter("estado"));
+            tareaService.updateTarea(tarea);
+        }
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        response.sendRedirect(request.getContextPath() + "/TareaServlet?action=list&projectId=" + projectId);
+    }
+
 }

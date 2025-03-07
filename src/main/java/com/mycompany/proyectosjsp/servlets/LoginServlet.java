@@ -1,70 +1,63 @@
 package com.mycompany.proyectosjsp.servlets;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import com.mycompany.proyectosjsp.model.Usuario;
+import com.mycompany.proyectosjsp.service.UsuarioService;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Servlet to handle user login requests.
- * Processes login for regular users (username only) and admin login.
- * For admin login, the username must be "admin".
- *
- * URL mapping: /login
- */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-    }
+    private UsuarioService usuarioService = new UsuarioService();
 
-    /**
-     * Handles GET requests by forwarding to the login JSP page.
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
-    }
-
-    /**
-     * Handles POST requests to process login.
-     * For regular login, only a username is required.
-     * For admin login, the username must be "admin".
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve the username from the form
+        // Retrieve the username and password from the login form
         String username = request.getParameter("username");
-        // Retrieve the action parameter to determine which button was pressed
-        String action = request.getParameter("action");
+        String password = request.getParameter("password");
 
-        HttpSession session = request.getSession();
+        // Validate credentials using the service
+        Usuario usuario = usuarioService.findUsuarioByCredentials(username, password);
 
-        if ("login_admin".equals(action)) {
-            // For admin login, verify that the username is "admin"
-            if ("admin".equals(username)) {
-                session.setAttribute("usuario", "admin");
-                session.setAttribute("rol", "admin");
-                response.sendRedirect("inicio.jsp");
+        if (usuario != null) {
+            // If the username is "admin", enforce the role "admin"
+            if ("admin".equalsIgnoreCase(username)) {
+                usuario.setRol("admin");
+                // Opcional: actualizar la base de datos si quieres persistir este cambio
+                // usuarioService.updateUsuario(usuario);
             } else {
-                request.setAttribute("error", "Invalid admin credentials. Please enter 'admin' as the username.");
-                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                // Para otros usuarios, asegúrate de que el rol se haya asignado en la BD
+                // o, si no, lo asignas como "invitado"
+                if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
+                    usuario.setRol("invitado");
+                    // Opcional: usuarioService.updateUsuario(usuario);
+                }
             }
-        } else if ("login_user".equals(action)) {
-            // For regular login, accept any non-empty username
-            session.setAttribute("usuario", username);
-            session.setAttribute("rol", "usuario");
-            response.sendRedirect("inicio.jsp");
+
+            // Store user info in session
+            request.getSession().setAttribute("usuario", usuario);
+            request.getSession().setAttribute("rol", usuario.getRol());
+
+            // Redirect based on role: admin gets full CRUD access, invitados a vistas limitadas
+            if ("admin".equalsIgnoreCase(usuario.getRol())) {
+                response.sendRedirect(request.getContextPath() + "/views/admin/admin.jsp");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/invitado/invitado.jsp");
+            }
         } else {
-            request.setAttribute("error", "Invalid login action.");
+            // In case of invalid credentials, forward back to login with an error message
+            request.setAttribute("error", "Usuario o contraseña incorrectos.");
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Forward GET requests to the login page
+        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
     }
 }
