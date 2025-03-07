@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Lista de Proyectos</title>
-        <!-- Add your CSS files or styles here -->
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
     </head>
     <body>
         <h1>Lista de Proyectos</h1>
@@ -45,6 +45,6 @@
         <br/>
         <a href="${pageContext.request.contextPath}/views/proyectos/agregarProyecto.jsp">Añadir nuevo Proyecto</a>
         <br/>
-        <a href="${pageContext.request.contextPath}/views/admin/admin.jsp">Vovler al panel de Administrador</a>
+        <a href="${pageContext.request.contextPath}/views/admin/admin.jsp">Volver al panel de Administrador</a>
     </body>
 </html>

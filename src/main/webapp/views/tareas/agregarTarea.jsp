@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Agregar Tarea</title>
-    <!-- Include your CSS files or styles here -->
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
 </head>
 <body>
     <h1>Agregar Tarea</h1>

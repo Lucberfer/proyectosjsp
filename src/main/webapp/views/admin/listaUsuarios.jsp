@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Usuarios</title>
-    <!-- Add your CSS files or styles here -->
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
 </head>
 <body>
     <h1>Lista de usuarios</h1>

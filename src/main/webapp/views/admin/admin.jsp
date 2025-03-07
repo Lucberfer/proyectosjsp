@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel de Administrador</title>
-    <!-- Add your CSS files or styles here -->
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
 </head>
 <body>
     <h1>Bienvenido Administrador</h1>

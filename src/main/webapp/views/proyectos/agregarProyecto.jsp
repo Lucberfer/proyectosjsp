@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Agregar Proyecto</title>
-        <!-- Puedes incluir hojas de estilo o frameworks (Bootstrap, jQuery UI) para mejorar la apariencia del calendario -->
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
     </head>
     <body>
         <h1>Añadir Nuevo Proyecto</h1>

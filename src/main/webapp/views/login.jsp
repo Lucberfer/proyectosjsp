@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Iniciar Sesión</title>
-        <!-- Agrega tus hojas de estilo aquí -->
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
     </head>
     <body>
         <h1>Iniciar Sesión</h1>

@@ -6,8 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Tareas</title>
-    <!-- Add your CSS files or styles here -->
-</head>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css"></head>
 <body>
     <h1>Lista de Tareas</h1>
     <!-- Table to display tasks -->
@@ -35,9 +34,9 @@
                     <td>${tarea.estado}</td>
                     <td>${tarea.proyecto.nombre}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${tarea.proyecto.id}">Editar</a>
+                        <button href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${tarea.proyecto.id}">Editar</button>
                         |
-                        <a href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${tarea.proyecto.id}" onclick="return confirm('Estas seguro de que quieres eliminar la Tarea?');">Delete</a>
+                        <button href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${tarea.proyecto.id}" onclick="return confirm('Estas seguro de que quieres eliminar la Tarea?');">Eliminar</button>
                     </td>
                 </tr>
             </c:forEach>
@@ -45,7 +44,7 @@
     </table>
     <br/>
     <!-- Link to add a new task -->
-    <a href="${pageContext.request.contextPath}/TareaServlet?action=new">Añádir una nueva Tarea</a>
+    <button href="${pageContext.request.contextPath}/TareaServlet?action=new">Añádir una nueva Tarea</button>
     <br/><br/>
     <!-- Link to return to the project list (or admin panel) -->
     <a href="${pageContext.request.contextPath}/ProyectoServlet?action=list">Vuelta a la Lista de Proyectos</a>

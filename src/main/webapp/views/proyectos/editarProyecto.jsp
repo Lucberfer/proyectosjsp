@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Editar Proyecto</title>
-        <!-- Agrega tus hojas de estilo CSS aquí si lo deseas -->
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/Style.css">
     </head>
     <body>
         <h1>Editar Proyecto</h1>
