@@ -34,9 +34,9 @@
                     <td>${tarea.estado}</td>
                     <td>${tarea.proyecto.nombre}</td>
                     <td>
-                        <button href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${tarea.proyecto.id}">Editar</button>
+                        <a href="${pageContext.request.contextPath}/TareaServlet?action=edit&id=${tarea.id}&projectId=${tarea.proyecto.id}">Editar</a>
                         |
-                        <button href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${tarea.proyecto.id}" onclick="return confirm('Estas seguro de que quieres eliminar la Tarea?');">Eliminar</button>
+                        <a href="${pageContext.request.contextPath}/TareaServlet?action=delete&id=${tarea.id}&projectId=${tarea.proyecto.id}" onclick="return confirm('Estas seguro de que quieres eliminar la Tarea?');">Eliminar</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -44,7 +44,7 @@
     </table>
     <br/>
     <!-- Link to add a new task -->
-    <button href="${pageContext.request.contextPath}/TareaServlet?action=new">Añádir una nueva Tarea</button>
+    <a href="${pageContext.request.contextPath}/TareaServlet?action=new">Añadir una nueva Tarea</a>
     <br/><br/>
     <!-- Link to return to the project list (or admin panel) -->
     <a href="${pageContext.request.contextPath}/ProyectoServlet?action=list">Vuelta a la Lista de Proyectos</a>

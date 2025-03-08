@@ -13,9 +13,9 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
                         <!-- Edit and Delete links for each user -->
                         <a href="${pageContext.request.contextPath}/UsuarioServlet?action=edit&id=${usuario.id}">Editar</a>
                         |
-                        <a href="${pageContext.request.contextPath}/UsuarioServlet?action=delete&id=${usuario.id}" onclick="return confirm('Estás seguro de que quieres eliminar este usuario?');">Delete</a>
+                        <a href="${pageContext.request.contextPath}/UsuarioServlet?action=delete&id=${usuario.id}" onclick="return confirm('Estás seguro de que quieres eliminar este usuario?');">Eliminar</a>
                     </td>
                 </tr>
             </c:forEach>

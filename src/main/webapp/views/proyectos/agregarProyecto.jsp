@@ -43,7 +43,7 @@
             <br/><br/>
 
             <!-- Submit button -->
-            <input type="submit" value="Creat Proyecto">
+            <input type="submit" value="Crear Proyecto">
         </form>
         <br/>
         <!-- Link to return to the project list -->
